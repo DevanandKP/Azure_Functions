@@ -6,24 +6,27 @@ import time
 from requests import get, post
 import requests
 from urllib.parse import quote
+
 from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient
 from azure.search.documents.aio import SearchClient
 
 
-form_endpoint = "https://nlp-search-form-recognizer.cognitiveservices.azure.com/"
-key = "8c0d8d1414fc440db1e1420a409761df"
-conn_str = "DefaultEndpointsProtocol=https;AccountName=nlpaisearchstorage;AccountKey=F1ItDMsj8WpyG57z4YNlvvClRdzDIrApUQnM4iyrs7UmUmTc4jSFqCs40/1t2Qy48stb9+DA4GU/+ASt6o7oAA==;EndpointSuffix=core.windows.net"
+form_endpoint = os.environ["CUSTOMCONNSTR_form_endpoint"]
+key = os.environ["CUSTOMCONNSTR_key"]
+conn_str = os.environ["CUSTOMCONNSTR_conn_str"]
+
+
 input_container = "formrec-ip-openai-poc"
 #input_blob = os.path.join("/azure function - form recognizer- cognitive search", "input")
 output_container = "openai-poc"
 blob_service_client = BlobServiceClient.from_connection_string(conn_str)
 
 
-azure_SEARCH_SERVICE_NAME = "nlp-cognitive-search"
-azure_SEARCH_API_KEY = "rFcoeiOpi95CRLX2oWJnu36sNSN9vtfj8i3BGerNKtAzSeBmb8Om"
-azure_SEARCH_INDEX_NAME = "formrec-index"
+azure_SEARCH_SERVICE_NAME = os.environ["CUSTOMCONNSTR_azure_SEARCH_SERVICE_NAME"]
+azure_SEARCH_API_KEY = os.environ["CUSTOMCONNSTR_azure_SEARCH_API_KEY"]
+azure_SEARCH_INDEX_NAME = os.environ["CUSTOMCONNSTR_azure_SEARCH_INDEX_NAME"]
 
 cog_search_endpoint = f"https://{azure_SEARCH_SERVICE_NAME}.search.windows.net/"
 api_version = '?api-version=2020-06-30'
@@ -47,17 +50,28 @@ def double_to_integer(data):
     else:
         return data
     
+def extract_url_content(data,url):
+    blob_url = quote(url, safe=':/')
+    response = {}
+    response["url"]=blob_url
+    response["content"] = data["content"]
+    return response
+
 
 async def analyze_document(blob_url,name):
     document_analysis_client = DocumentAnalysisClient(endpoint=form_endpoint, credential=AzureKeyCredential(key))
     poller = document_analysis_client.begin_analyze_document_from_url("prebuilt-document", blob_url)
-    wait_sec = 10 #???
-    time.sleep(wait_sec)
+    #wait_sec = 10 #???
+    #time.sleep(wait_sec)
     result = poller.result()
     result_in_dict = result.to_dict()
+
+    '''
     blob_url = quote(blob_url, safe=':/')
     result_in_dict1["url"]=blob_url
     result_in_dict1["content"] = result_in_dict["content"]
+    '''
+    result_in_dict1 = extract_url_content(result_in_dict,blob_url)
     response = double_to_integer(result_in_dict1)
     resp_json = json.dumps(response)
 
