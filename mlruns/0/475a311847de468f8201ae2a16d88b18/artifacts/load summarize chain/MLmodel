@@ -1,0 +1,21 @@
+artifact_path: load summarize chain
+flavors:
+  langchain:
+    code: null
+    langchain_version: 0.0.235
+    model_data: model.yaml
+    model_type: RefineDocumentsChain
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.langchain
+    model_data: model.yaml
+    python_version: 3.9.7
+mlflow_version: 2.5.0
+model_uuid: 37127bf6e91e4c1b9f7c0147e9d202b7
+run_id: 475a311847de468f8201ae2a16d88b18
+signature:
+  inputs: '[{"type": "string", "name": "input_documents"}]'
+  outputs: '[{"type": "string", "name": "output_text"}]'
+utc_time_created: '2023-07-18 14:21:21.657078'

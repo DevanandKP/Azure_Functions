@@ -1,0 +1,94 @@
+_type: refine_documents_chain
+document_prompt:
+  _type: prompt
+  input_variables:
+  - page_content
+  output_parser: null
+  partial_variables: {}
+  template: '{page_content}'
+  template_format: f-string
+  validate_template: true
+document_variable_name: text
+initial_llm_chain:
+  _type: llm_chain
+  llm:
+    _type: openai
+    engine: gpt-35-turbo-deploy
+    frequency_penalty: 0
+    logit_bias: &id001 {}
+    max_tokens: 256
+    model_name: text-davinci-003
+    n: 1
+    presence_penalty: 0
+    request_timeout: null
+    temperature: 0.0
+    top_p: 1
+  llm_kwargs: {}
+  memory: null
+  metadata: null
+  output_key: text
+  output_parser:
+    _type: default
+  prompt:
+    _type: prompt
+    input_variables:
+    - text
+    output_parser: null
+    partial_variables: {}
+    template: "You are an expert in giving executive summaries to business audience.\n\
+      Given below text, summarize to a business audience to answer the following question\
+      \ \n\nQuestions: 'forecast':.\n\nText:\n '{text}'\n\nFollow the below mentioned\
+      \ guidelines while generating response: \nGuideline 1: Use bulleted list for\
+      \ each points in the summary. \nGuideline 2: summary should contain one or two\
+      \ sentences. \nGuideline 3: summary should be provided based on factual data."
+    template_format: f-string
+    validate_template: true
+  return_final_only: true
+  tags: null
+  verbose: false
+initial_response_name: existing_answer
+input_key: input_documents
+memory: null
+metadata: null
+output_key: output_text
+refine_llm_chain:
+  _type: llm_chain
+  llm:
+    _type: openai
+    engine: gpt-35-turbo-deploy
+    frequency_penalty: 0
+    logit_bias: *id001
+    max_tokens: 256
+    model_name: text-davinci-003
+    n: 1
+    presence_penalty: 0
+    request_timeout: null
+    temperature: 0.0
+    top_p: 1
+  llm_kwargs: {}
+  memory: null
+  metadata: null
+  output_key: text
+  output_parser:
+    _type: default
+  prompt:
+    _type: prompt
+    input_variables:
+    - existing_answer
+    - text
+    output_parser: null
+    partial_variables: {}
+    template: "Your job is to produce a final summary. \nWe have provided an existing\
+      \ summary up to a certain point: '{existing_answer}'. \nWe have the opportunity\
+      \ to refine the existing summary (only if needed) with some more context below.\n\
+      ------------\n'{text}'\n------------\n Given the new context, refine the original\
+      \ summary for the following question \n\nQuestions: 'forecast'. If the context\
+      \ isn't useful, return the original summary."
+    template_format: f-string
+    validate_template: true
+  return_final_only: true
+  tags: null
+  verbose: false
+return_intermediate_steps: false
+tags: null
+verbose: false

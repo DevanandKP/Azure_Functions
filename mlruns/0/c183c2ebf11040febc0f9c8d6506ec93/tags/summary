@@ -1,0 +1,6 @@
+ 
+
+Answer: 
+- The data was noisy at weekly level and combinations were too sparse/noisy to build accurate models. 
+- The data was divided into High, Medium, Low, Sparse Buckets using respective stream’s avg. weekly service line orders and co-efficient of variation (CoV). 
+- The modelling techniques employed for prediction and the final models were decided based on simplicity & performance.<|im_end|>

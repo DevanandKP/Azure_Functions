@@ -1,0 +1,7 @@
+
+Given below text, summarize to a business audience to answer the following question 
+
+Questions: '<user_query>':.
+
+Text:
+ '{text}'

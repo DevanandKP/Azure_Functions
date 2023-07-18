@@ -91,7 +91,7 @@ async def main(myblob: func.InputStream):
     
     
     container_client = blob_service_client.get_container_client(input_container)
-    count = 0
+    #count = 0
     for blob in container_client.list_blobs():
     #for blob in container_client.walk_blobs(name_starts_with=input_blob):
         blob_url = container_client.url + "/" + str(blob.name)
@@ -109,5 +109,8 @@ async def main(myblob: func.InputStream):
     response  = requests.get(url, headers=headers, json=searchstring)
     query = response.json()
 
+
+    '''
     with open("op_cogsearch.json", "w") as json_file:
         json.dump(query,json_file,indent =2)
+    '''

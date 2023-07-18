@@ -1,0 +1,15 @@
+artifact_uri: file:///root/Project1/Azure%20Functions/mlruns/0/475a311847de468f8201ae2a16d88b18/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 475a311847de468f8201ae2a16d88b18
+run_name: peaceful-mare-474
+run_uuid: 475a311847de468f8201ae2a16d88b18
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1689690033460
+status: 1
+tags: []
+user_id: root
