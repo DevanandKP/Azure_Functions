@@ -13,3 +13,6 @@ numpy
 azure-ai-formrecognizer
 azure-search-documents
 aiohttp
+mlflow
+langchain
+openai
