@@ -79,18 +79,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             pass
         else:
             search_query = req_body.get('query')
-    end_time1 =time.time()
 
-    print("time for query", end_time1-start_time)
 
     if search_query:
+        end_time1 =time.time()
+        print("time to get query", end_time1-start_time)
+
         searchstring = f'&search={search_query}&$top=2'
         url = cog_search_endpoint + f"indexes/{azure_SEARCH_INDEX_NAME}/docs" + api_version + searchstring
         response  = requests.get(url, headers=headers, json=searchstring)
         output = response.json()
 
         end_time2 =time.time()
-        print("time for response", end_time2-end_time1)
+        print("time to get cognitive search response", end_time2-end_time1)
 
         #output_json=json.dumps(output,indent =2) 
 
@@ -114,7 +115,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         response_json = json.dumps(response_data,indent=4)
 
         end_time5 =time.time()
-        print("time for query", end_time5-end_time4)
+        print("time to get function response", end_time5-end_time4)
 
         return func.HttpResponse(response_json,mimetype="application/json",status_code=200)
 
