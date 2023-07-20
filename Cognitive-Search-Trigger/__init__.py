@@ -2,7 +2,9 @@ import logging
 import requests
 import json
 import os
-
+import mlflow
+import time
+import logging
 import azure.functions as func
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents.aio import SearchClient
@@ -39,7 +41,7 @@ obj = Summarizer(connection_params,model_config)
 
 azure_SEARCH_SERVICE_NAME = os.environ["CUSTOMCONNSTR_azure_SEARCH_SERVICE_NAME"]
 azure_SEARCH_API_KEY = os.environ["CUSTOMCONNSTR_azure_SEARCH_API_KEY"]
-azure_SEARCH_INDEX_NAME = "ppt-pdf-new"
+azure_SEARCH_INDEX_NAME = "demo-index"
 function_access_key = os.environ["CUSTOMCONNSTR_function_access_key"]
 
 cog_search_endpoint = f"https://{azure_SEARCH_SERVICE_NAME}.search.windows.net/"
@@ -51,15 +53,18 @@ indexer_name = "ppt-pdf-new"
 def list_docs(output):
     content=[]
     for i in range(len(output['value'])):
-        content.append(output['value'][i]['content']['content'])
+        content.append(output['value'][i]['content'])
     return content
+
+
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
+    start_time=time.time()
 
     query_params = req.params
     search_query = query_params.get('query')
-    key_query = query_params.get('key')
+    #key_query = query_params.get('key')
     #no_of_docs = query_params.get('nos')
 
     '''
@@ -74,27 +79,46 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             pass
         else:
             search_query = req_body.get('query')
+    end_time1 =time.time()
+
+    print("time for query", end_time1-start_time)
 
     if search_query:
-        searchstring = f'&search={search_query}&$top=3'
-        url = cog_search_endpoint + "indexes/ppt-pdf-new/docs" + api_version + searchstring
+        searchstring = f'&search={search_query}&$top=2'
+        url = cog_search_endpoint + f"indexes/{azure_SEARCH_INDEX_NAME}/docs" + api_version + searchstring
         response  = requests.get(url, headers=headers, json=searchstring)
         output = response.json()
+
+        end_time2 =time.time()
+        print("time for response", end_time2-end_time1)
+
         #output_json=json.dumps(output,indent =2) 
 
         summary = list_docs(output)
-        docs = [Document(page_content=t) for t in summary[:3]]
 
+        docs = [Document(page_content=t) for t in summary[:3]]
+        
+        end_time3 =time.time()
+        print("time for pre-processing", end_time3-end_time2)
+        
         final_summary= obj.summarize(search_query,docs)
+
+        end_time4 =time.time()
+        print("time for summary", end_time4-end_time3)
 
         response_data = {
         "json_data": output,
-        "my_list": summary,
+        #"my_list": summary,
         "final_summary":final_summary}
 
         response_json = json.dumps(response_data,indent=4)
 
+        end_time5 =time.time()
+        print("time for query", end_time5-end_time4)
+
         return func.HttpResponse(response_json,mimetype="application/json",status_code=200)
+
+        #return func.HttpResponse(body=output_json,status_code=200)
     else:
         return func.HttpResponse(
             "Pass a keyword in the query string or in the request body to get results.",

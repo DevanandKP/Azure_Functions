@@ -1,5 +1,6 @@
 import logging
 import time
+import os
 
 import mlflow
 from langchain import OpenAI, PromptTemplate
@@ -70,6 +71,7 @@ class Summarizer():
                 openai.api_type = self.connection_param_dict["api_type"]
                 openai.api_base = self.connection_param_dict["api_base"]
                 openai.api_version = self.connection_param_dict["api_version"]
+                #openai.api_ = self.connection_param_dict["api_version"]
         except KeyError as e:
             raise KeyError(
                 f"""An error occurred during the setting the connection parameters.
